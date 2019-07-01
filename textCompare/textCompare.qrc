@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>textcompare_zh.qm</file>
+    </qresource>
+    <qresource prefix="/Icon">
+        <file>Icon/closeButton.png</file>
+    </qresource>
+    <qresource prefix="/Font">
+        <file>Font/consola.ttf</file>
+    </qresource>
+</RCC>
