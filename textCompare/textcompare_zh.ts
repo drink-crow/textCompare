@@ -121,7 +121,7 @@
 <context>
     <name>textCompare</name>
     <message>
-        <location filename="textCompare.cpp" line="84"/>
+        <location filename="textCompare.cpp" line="85"/>
         <source>choose files to open</source>
         <translation>选择要打开的文件</translation>
     </message>

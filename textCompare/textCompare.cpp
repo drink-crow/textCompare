@@ -52,6 +52,7 @@ void textCompare::textCompareOpenFile(QStringList &fileNames)
 		connect(newEditor->getNewTitle(), SIGNAL(closeRequest(QWidget *)), this, SLOT(editCloseNotify(QWidget *)));
 		connect(newEditor, SIGNAL(showMassage(QString)), this, SLOT(showMassageinStatuBar(QString)));
 		connect(newEditor, SIGNAL(checktabified()), this, SLOT(checkEditTabified()));
+		connect(newEditor->getTextEdit(), SIGNAL(openFilesSingal(QStringList&)), this, SLOT(textCompareOpenFile(QStringList&)));
 		vecDockWidget.push_back(newEditor);
 
 		newEditor->openFile(fileNames[i]);

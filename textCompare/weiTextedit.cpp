@@ -69,12 +69,12 @@ void weiTextedit::handleScrollBarMove(int dx, int dy)
 
 void weiTextedit::cursorTextEditChanged()
 {
-	ui.modifyColor->cursorTextEditChanged();
+	//ui.modifyColor->cursorTextEditChanged();
 }
 
 void weiTextedit::selectionTextEditChanged()
 {
-	ui.modifyColor->selectionTextEditChanged();
+	//ui.modifyColor->selectionTextEditChanged();
 }
 
 void weiTextedit::textUndo()
@@ -104,23 +104,96 @@ void weiTextedit::contentChanged(int position, int charsRemoved, int charsAdded)
 
 	//新旧文本字符总数一样，只要判断被改变的范围前后是否一致就好了
 	//如此判断是因为在中文输入法下，文本输入为完成也会有contentsChange(int, int, int)信号产生
-	QString addText(ui.textEdit->document()->toPlainText().mid(position, charsAdded));
+	QTextDocument *d = ui.textEdit->document();
+	QString addText(d->toPlainText().mid(position, charsAdded));
 	if (charsRemoved == charsAdded)
 	{	
-		//前后文本一致，无须改变
-		if (text.mid(position, charsAdded) == addText)
+		//前后文本一致，无须改变，先判断是否有选择移动
+		if (!ui.textEdit->getIsSelectMove() && text.mid(position, charsAdded) == addText)
 		{
 			return;
 		}
 	}
+	qDebug() << "ROW position: " << position << " charsRemoved: " << charsRemoved << " charsAdded: " << charsAdded << endl;
 	//改变现有文本
+	QString removedText = text.mid(position, charsRemoved);
 	text.replace(position, charsRemoved, addText);
 	//qDebug() << "context changed!!!!!!\nposition = " << position << "charsRemoved = " << charsRemoved << "charsAdded" << charsAdded << endl;
+	//一行为单位
+
+	vector<int> vPosition;
+	vector<int> vCharsRemoved;
+	vector<int> vCharsAdded;
+	changeType type = changeType::defualt;
+	QTextCursor c = ui.textEdit->textCursor();
+	c.setPosition(position, QTextCursor::MoveAnchor);
+
+	//选择移动模式下
+	if (ui.textEdit->getIsSelectMove())
+	{
+		type = changeType::move;
+
+		int selectStartLine = ui.textEdit->getSelectStartLineNum();
+		int effectCount = ui.textEdit->getSelectEndLineNum() - ui.textEdit->getSelectStartLineNum() + 1;
+		int startLine = c.blockNumber();
+		//移动到被选择目标的前面
+		//这两个等于证明是移动到原来位置的后面或者同一行间移动
+		if (selectStartLine == startLine)
+		{
+			//这里的顺序一定要先删了再增
+			vPosition.push_back(startLine);
+			vCharsRemoved.push_back(effectCount);
+			vCharsAdded.push_back(1);
+
+			vPosition.push_back(startLine + removedText.count('\n') + 1 - effectCount);
+			vCharsRemoved.push_back(1);
+			vCharsAdded.push_back(effectCount);
+		}
+		//移动到原来位置的前面
+		else
+		{
+			//这里的顺序一定要先删了再增
+			vPosition.push_back(selectStartLine);
+			vCharsRemoved.push_back(effectCount);
+			vCharsAdded.push_back(1);
+
+			vPosition.push_back(startLine);
+			vCharsRemoved.push_back(1);
+			vCharsAdded.push_back(effectCount);
+		}
+
+		qDebug() << "move position: " << vPosition[0] << " charsRemoved: " << vCharsRemoved[0] << " charsAdded: " << vCharsAdded[0] << endl;
+		qDebug() << "move position: " << vPosition[1] << " charsRemoved: " << vCharsRemoved[1] << " charsAdded: " << vCharsAdded[1] << endl;
+
+		ui.textEdit->doneSelectMove();
+	}
+	//普通修改模式
+	else
+	{
+		vPosition.push_back(c.blockNumber());
+
+		int removedLineCount = removedText.count('\n');
+		int addedLineCount = addText.count('\n');
+		//这种情况是插入一个字符，给出的charsRemoved，charsAdded是删去一整行又加上一整行的
+		if (1 == removedLineCount &&
+			1 == addedLineCount && 
+			removedText.endsWith('\n') && 
+			removedText.endsWith('\n'))
+		{
+			vCharsRemoved.push_back(1);
+			vCharsAdded.push_back(1);
+		}
+		else
+		{
+			vCharsRemoved.push_back(removedText.count('\n') + 1);
+			vCharsAdded.push_back(addText.count('\n') + 1);
+		}
+			qDebug() << "defualt position: " << vPosition[0] << " charsRemoved: " << vCharsRemoved[0] << " charsAdded: " << vCharsAdded[0] << endl;
+	}
 
 	//改变修改颜色提示框
 	int t = scText->value();
-	ui.modifyColor->contentChange(position, charsRemoved, charsAdded);
+	ui.modifyColor->contentChange(type, vPosition, vCharsRemoved, vCharsAdded, charsAdded - charsRemoved);
 	scColor->setValue(t);
-
 }
 

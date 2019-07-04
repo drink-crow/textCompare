@@ -16,8 +16,6 @@ class textCompare : public QMainWindow
 
 public:
 	textCompare(QWidget *parent = Q_NULLPTR);
-	//根据包含路径的名字打开文件
-	void textCompareOpenFile(QStringList &fileNames);
 
 //信号槽
 public slots:
@@ -30,6 +28,8 @@ public slots:
 	void showMassageinStatuBar(QString massge);
 	//检查DockWidget的tab状态和做出相应的动作
 	void checkEditTabified();
+	//根据包含路径的名字打开文件
+	void textCompareOpenFile(QStringList &fileNames);
 
 private:
 	Ui::textCompareClass ui;

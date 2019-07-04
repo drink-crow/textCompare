@@ -117,5 +117,6 @@
     <None Include="textcompare_zh.ts">
       <Filter>Translation Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

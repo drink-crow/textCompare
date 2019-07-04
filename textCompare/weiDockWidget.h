@@ -25,6 +25,7 @@ public:
 	void setUntabMargins(){ this->vLayout->setContentsMargins(0, originTopMargin, 0, 0); }
 	void addText(QString t) { this->textEdit->setPlainText(t); }
 	customTitleBar* getNewTitle() const { return newTitle; }
+	customTextEdit* getTextEdit() const { return textEdit->getTextEdit(); }
 	inline QUuid getUid(void) { return uid; }
 	bool getIsClosing() { return isClosing; }
 

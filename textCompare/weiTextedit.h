@@ -19,6 +19,8 @@ public:
 	void setPlainText(QString &str);
 	//打开文本等
 	bool openFiletoEdit(QString file);
+	//
+	customTextEdit* getTextEdit() const { return ui.textEdit; }
 
 private:
 	Ui::mainWidget ui;
