@@ -63,7 +63,7 @@ public:
         modifyColor = new modifyColorWidget(mainWidget);
         modifyColor->setObjectName(QStringLiteral("modifyColor"));
         modifyColor->setEnabled(false);
-        modifyColor->setMaximumSize(QSize(200, 16777215));
+        modifyColor->setMaximumSize(QSize(12, 16777215));
         modifyColor->setFrameShape(QFrame::NoFrame);
         modifyColor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         modifyColor->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
